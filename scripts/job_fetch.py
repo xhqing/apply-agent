@@ -894,8 +894,29 @@ def classify_employment(job: dict) -> str:
     return "unknown"
 
 
+LI_REMOTE_KW = ("远程办公", "远程工作", "可远程", "支持远程", "全职远程", "远程岗位",
+                "fully remote", "100% remote", "remote-first", "remote position",
+                "remote role", "remote work", "work from home", "work-from-home")
+# 坐班反证：JD 明写坐班 / 到岗时优先按非远程（用户口径：全职只找远程）
+LI_ONSITE_KW = ("坐班", "到岗", "驻场", "线下办公", "in office position",
+                "in-office position", "on-site", "onsite", "office-based")
+
+
 def remote_ok(job: dict) -> bool:
-    if job["platform"] in ("WWR", "Upwork", "LinkedIn"):
+    if job["platform"] in ("WWR", "Upwork"):
+        return True
+    if job["platform"] == "LinkedIn":
+        # f_WT=2 在 guest 列表上不可靠：国内公司常把坐班岗按远程提交（2026-11-19 实测
+        # 77 条境内岗 JD 里 0 次提到远程，却被排在「全职 · 远程」区）。招聘地点落在
+        # 境内具体城市时，只有 JD 明确写了远程办公、且没有坐班反证，才算远程。
+        loc = (job.get("location") or "").lower()
+        if any(k in loc for k in ("china", "hong kong", "taiwan", "macau")) and not any(
+            k in loc for k in ("remote", "anywhere", "worldwide")
+        ):
+            text = f"{job['title']} {job['jd']}".lower()
+            if any(k in text for k in LI_ONSITE_KW):
+                return False
+            return any(k in text for k in LI_REMOTE_KW)
         return True
     text = f"{job['title']} {job['jd']}"
     if "远程" in text or "remote" in text.lower():

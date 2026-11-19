@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### 变更（LinkedIn 远程判定修正：境内坐班岗不再混入「全职 · 远程」区，2026-11-19）
+
+- **为什么改**：本轮四平台抓取（`docs/jobs/brief-20261119-2246.md`）的「全职 · 远程」82 条里有 77 条其实是中国境内坐班岗——LinkedIn guest 端点的 `f_WT=2`（workplace-type=remote）对国内公司按 remote 提交的岗位没有真实过滤，这 77 条 JD 全文里一次「远程」都没提，简报却把它们按分数排在最前面。按 2026-10-22 口径（全职只找远程）逐条复核要消耗大量时间，且真远程岗会被噪声淹掉。
+- **改了什么**：`scripts/job_fetch.py` 的 `remote_ok()` 对 LinkedIn 拆分处理——招聘地点落在境内（China / Hong Kong / Taiwan / Macau）且不在 Remote / Anywhere 桶时，JD 必须出现强远程表述（远程办公 / 可远程 / 全职远程 / fully remote / remote-first / remote position 等）**且**不含坐班反证（坐班 / 到岗 / 驻场 / in office position / on-site / office-based）才判远程，否则按非远程记、归入简报「全职但非远程」区；WWR / Upwork 判定不变。同一份 JSONL 经 `--from-jsonl` 重算验证：全职远程 82 → 5、非远程全职 75 → 77；Xiaomi 的 `[City / Remote / Hybrid]` 模板占位与 Patsnap 的 `in office position` 均被正确判为非远程，电鸭两条真远程岗（Agent 开发、AI 交易研究员）仍在推荐位。
+
 ### 变更（修复 `.codebuddy/skills` 软链接指向，2026-11-09）
 
 - **为什么改**：项目 2026-11-09 由 `ApplyOptimizerAgent` 更名为 `apply-agent`，仓库里被跟踪的 `.codebuddy/skills` 软链接仍指向旧绝对路径 `/Users/xhq/Developer/ApplyOptimizerAgent/.pi/skills`，改名后成为断链（CodeBuddy 侧读不到技能）。
