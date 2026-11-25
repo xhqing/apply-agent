@@ -63,4 +63,10 @@
 
 ## 子项目清单
 
-暂无子项目；子项目归属与 Leader / Worker 分工见全局 `~/.pi/agent/AGENTS.md`「Leader / Worker 分工」与 `~/.pi/agent/docs/agents-registry.md` 第 4 条（2026-11-07 立）：Agent 项目根目录的会话是 Leader（local main 同步、建 worktree、派任务、收尾），子项目根 / worktree 的会话是 Worker（干具体活并汇报）；子项目须带 `AGENTS.md` 软链接 + 真实 `.pi/` 目录 + `.pi/APPEND_SYSTEM.md`。
+暂无子项目。子项目归属与会话角色见全局 `~/.pi/agent/AGENTS.md`「会话间协作」节的「Leader / Worker 的定义」与 `~/.pi/agent/docs/agents-registry.md` 第 5 条（2026-11-25 用户重新定义，取代 2026-11-07 版）：
+
+- **agentLeader** = Agent 项目主工作区的 `main` 分支：管理本项目与名下全部子项目的 local main 快进、分支与 worktree、派单、合并 PR、发版与收尾。
+- **subLeader** = 子项目主工作区的 `main` 分支：只管该子项目自身——local main 快进、从自身 main 建删任务 worktree、派 Worker、按全局工作流合并自身 PR、发自身版本、回收 Worker；对上级 Agent 项目与 sibling 子项目只读。
+- **Worker** = 任何项目的非 `main` 分支 worktree：只干当前 worktree 里的活（含 `/add` → `/commit` → push 分支 + PR），不碰 local main、不建删 worktree、不合并 PR、不发版、不写 worktree 以外的项目。
+
+子项目根目录放**本仓库实体** `AGENTS.md`（项目定位 / 负责 Agent / 会话角色边界 / 规则索引）与 `.pi/APPEND_SYSTEM.md`（本项目硬约束），两者随仓库提交；**不挂软链接、不写跨仓库 `settings.json` 路径**（2026-11-08 用户立，软链接做法早已废止）。
