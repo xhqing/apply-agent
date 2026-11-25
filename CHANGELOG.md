@@ -32,6 +32,12 @@
 
 ## [未发布]
 
+### 变更（会话角色口径更新为 agentLeader / subLeader / Worker 三级，2026-11-25）
+
+- **为什么改**：用户 2026-11-25 把全团队的 Leader / Worker 重新定义为三级角色（写入全局 `~/.pi/agent/AGENTS.md`「Leader / Worker 的定义」与 `~/.pi/agent/docs/agents-registry.md` 第 5 条，取代 2026-11-12 版）。本项目 `AGENTS.md`「子项目清单」节还留着 2026-11-07 版旧口径——「Agent 项目根目录的会话是 Leader、子项目根 / worktree 的会话是 Worker」，既没有 subLeader 这一级，又要求子项目挂 `AGENTS.md` 软链接；软链接做法 2026-11-08 已被废止（子项目一律用本仓库实体 `AGENTS.md`），规则文件里留着会让人照着做、重新制造断链隐患。
+- **改了什么**：`AGENTS.md`「子项目清单」节改为当前口径——本项目主工作区 `main` = **agentLeader**、子项目主工作区 `main` = **subLeader**、任何项目的非 `main` 分支 worktree = **Worker**，各自职责按全局定义；引用指向全局 `AGENTS.md`「Leader / Worker 的定义」与 `docs/agents-registry.md` 第 5 条；子项目改为「本仓库实体 `AGENTS.md` + `.pi/APPEND_SYSTEM.md`，不挂软链接、不写跨仓库 `settings.json` 路径」。全项目 grep `Leader` / `Worker` / `subLeader` / `agentLeader`，角色定义只有这一处，其它文件无同类旧口径。
+- **回归检查**：只改规则表述，不动脚本、台账、模板与技能；本项目当前无子项目，改动不影响任何现役流程。
+
 ### 变更（项目规则文件本体统一改为 `AGENTS.md`，`CLAUDE.md` 弃用，2026-11-05）
 
 - **为什么改**：用户 2026-11-05 立规「所有注册表项目与全局的规则文件本体统一用 `AGENTS.md`，`CLAUDE.md` 弃用」。pi 的上下文文件候选顺序是 `AGENTS.override.md` > `AGENTS.md` > `CLAUDE.md`（同一目录只加载第一个存在的），本体放在 `AGENTS.md` 后 `CLAUDE.md` 根本不参与加载——两份并存只会形成双份内容、随时漂移。
